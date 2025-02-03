@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ממוצע שכר דירה בתל אביב</title>
+    <link rel="stylesheet" href="styles.css">  <!-- קישור לקובץ ה-CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <h1 class="header-title">ממוצע שכר דירה בתל אביב 🏠</h1>
+        </div>
+    </header>
+
+    <main class="content-container">
+        <section class="filters-section">
+            <div class="filter">
+                <label for="rooms" class="filter-label">סנן לפי מספר חדרים</label>
+                <select id="rooms" class="filter-select">
+                    <option value="all">הכל</option>
+                    <option value="1">1 חדר</option>
+                    <option value="2">2 חדרים</option>
+                    <option value="3">3 חדרים</option>
+                    <option value="4">4+ חדרים</option>
+                </select>
+            </div>
+
+            <div class="filter">
+                <label for="street" class="filter-label">חפש רחוב בתל אביב</label>
+                <input type="text" id="street" placeholder="הקלד שם רחוב" class="filter-input">
+            </div>
+        </section>
+
+        <section class="map-section">
+            <div id="map"></div>
+        </section>
+
+        <section class="table-section">
+            <table id="rentTable">
+                <thead>
+                    <tr>
+                        <th>שכונה</th>
+                        <th>מספר חדרים</th>
+                        <th>ממוצע שכר דירה (₪)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- הנתונים יוטענו כאן דרך JavaScript -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <script>
+        // יצירת אובייקט המפה
+        var map = L.map('map').setView([32.0853, 34.7818], 12); // מיקום תל אביב
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // יצירת אפשרות חיפוש עם Geocoder של Leaflet
+        var geocoder = L.Control.Geocoder.nominatim();
+        var searchControl = L.Control.geocoder({
+            query: '',
+            placeholder: 'הקלד שם רחוב',
+            collapsed: false,
+            position: 'topright',
+            geocoder: geocoder
+        }).addTo(map);
+
+        // כאשר המשתמש בוחר מקום
+        searchControl.on('markgeocode', function(e) {
+            var latlng = e.geocode.center;
+            var name = e.geocode.name;
+            map.setView(latlng, 15);
+            L.marker(latlng).addTo(map).bindPopup(name).openPopup();
+        });
+
+        // פונקציה להורדת נתוני שכר דירה
+        async function fetchRentData() {
+            try {
+                const response = await fetch('https://data.gov.il/api/3/action/datastore_search?resource_id=YOUR_RESOURCE_ID');
+                const data = await response.json();
+                if (data.result && data.result.records) {
+                    const formattedData = data.result.records.map(item => ({
+                        שכונה: item.Neighborhood,
+                        חדרים: parseInt(item.Rooms),
+                        שכר: parseInt(item.Rent)
+                    }));
+                    loadTable(formattedData);
+                } else {
+                    console.error('מבנה הנתונים אינו תואם');
+                }
+            } catch (error) {
+                console.error('שגיאה בטעינת הנתונים:', error);
+            }
+        }
+
+        // פונקציה לטעינת הנתונים לטבלה
+        function loadTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            data.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.שכונה}</td>
+                        <td>${item.חדרים}</td>
+                        <td>${item.שכר.toLocaleString()} ₪</td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // טעינת הנתונים בעת פתיחת העמוד
+        fetchRentData();
+    </script>
+</body>
+</html>
