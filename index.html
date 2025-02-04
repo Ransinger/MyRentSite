@@ -4,103 +4,170 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ממוצע שכר דירה בתל אביב</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    
+    <!-- עיצוב מודרני -->
     <style>
         body {
-            direction: rtl;
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .search-container {
+            margin: 20px 0;
+        }
+        input {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         table {
-            direction: rtl;
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
-            text-align: right;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
         }
-        .language-selector {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            display: flex;
-            gap: 10px;
-        }
-        .language-selector button {
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid #ddd;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .language-selector button:hover {
-            background: #ddd;
+        th {
+            background-color: #007BFF;
+            color: white;
         }
         #map {
             height: 400px;
             width: 100%;
             margin-top: 20px;
             border-radius: 10px;
-            border: 1px solid #ddd;
+        }
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .language-selector button {
+            background: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
     </style>
+    
+    <!-- חיבור לספריית Leaflet (מפה) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
-    <header>
-        <div class="logo-container">
-            <h1 class="header-title" data-lang="title">ממוצע שכר דירה בתל אביב</h1>
+
+    <!-- בוחר שפה -->
+    <div class="language-selector">
+        <button onclick="translateText('he')">🇮🇱 עברית</button>
+        <button onclick="translateText('en')">🇺🇸 English</button>
+    </div>
+
+    <div class="container">
+        <h1 id="title">ממוצע שכר דירה בתל אביב</h1>
+
+        <!-- חיפוש רחוב -->
+        <div class="search-container">
+            <input type="text" id="streetInput" placeholder="חפש רחוב בתל אביב..." oninput="searchStreet()">
         </div>
-        <div class="language-selector">
-            <button data-lang="he">עברית</button>
-            <button data-lang="en">English</button>
-        </div>
-    </header>
-    <main class="content-container">
+
+        <!-- טבלה -->
+        <table>
+            <thead>
+                <tr>
+                    <th>שכונה</th>
+                    <th>מספר חדרים</th>
+                    <th>ממוצע שכר דירה (₪)</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- הנתונים ייטענו כאן -->
+            </tbody>
+        </table>
+
+        <!-- מפה -->
         <div id="map"></div>
-    </main>
+    </div>
+
     <script>
-        // יצירת המפה והגדרת המיקום ההתחלתי בתל אביב
+        // ✅ אתחול המפה
         var map = L.map('map').setView([32.0853, 34.7818], 13);
-        
-        // הוספת שכבת מפה מבוססת OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
-        
-        // הוספת גיאוקודר (חיפוש כתובות והצגתן על המפה)
-        var geocoder = L.Control.geocoder({
-            defaultMarkGeocode: false
-        }).on('markgeocode', function(e) {
-            var latlng = e.geocode.center;
-            map.setView(latlng, 16); // זום אוטומטי לרחוב שנמצא
-            L.marker(latlng).addTo(map); // הוספת מרקר על הרחוב
-        }).addTo(map);
-        
-        // שינוי שפה לפי בחירת המשתמש
-        const langButtons = document.querySelectorAll('.language-selector button');
-        langButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const lang = button.dataset.lang;
-                translateText(lang);
-            });
-        });
 
-        // פונקציה להחלפת הטקסט באתר בהתאם לשפה שנבחרה
-        function translateText(lang) {
-            const elements = document.querySelectorAll('[data-lang]');
-            const translations = {
-                he: { title: 'ממוצע שכר דירה בתל אביב' },
-                en: { title: 'Average rent in Tel Aviv' }
-            };
-            elements.forEach(element => {
-                const key = element.dataset.lang;
-                if (translations[lang] && translations[lang][key]) {
-                    element.textContent = translations[lang][key];
-                }
+        // ✅ טענת נתונים (דוגמא)
+        const rentData = [
+            { שכונה: "רמת אביב", חדרים: 3, שכר: 8500 },
+            { שכונה: "פלורנטין", חדרים: 2, שכר: 7000 },
+            { שכונה: "צפון הישן", חדרים: 4, שכר: 12000 }
+        ];
+
+        function loadTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            data.forEach(item => {
+                const row = `<tr>
+                    <td>${item.שכונה}</td>
+                    <td>${item.חדרים}</td>
+                    <td>${item.שכר.toLocaleString()} ₪</td>
+                </tr>`;
+                tableBody.innerHTML += row;
             });
         }
+        loadTable(rentData);
+
+        // ✅ חיפוש רחוב
+        function searchStreet() {
+            let input = document.getElementById('streetInput').value;
+            if (input.length > 2) {
+                fetch(`https://nominatim.openstreetmap.org/search?city=Tel%20Aviv&street=${input}&format=json`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        let lat = data[0].lat;
+                        let lon = data[0].lon;
+                        map.setView([lat, lon], 16);
+                    }
+                });
+            }
+        }
+
+        // ✅ בחירת שפה
+        function translateText(lang) {
+            const translations = {
+                he: {
+                    title: "ממוצע שכר דירה בתל אביב",
+                    placeholder: "חפש רחוב בתל אביב..."
+                },
+                en: {
+                    title: "Average Rent in Tel Aviv",
+                    placeholder: "Search for a street in Tel Aviv..."
+                }
+            };
+
+            document.getElementById('title').textContent = translations[lang].title;
+            document.getElementById('streetInput').placeholder = translations[lang].placeholder;
+        }
     </script>
+
 </body>
 </html>
