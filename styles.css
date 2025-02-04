@@ -38,15 +38,15 @@ header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 40px;
-    flex-wrap: wrap; /* אפשרות לעבור לשורה חדשה */
+    flex-wrap: wrap;
 }
 
 .filter {
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin: 10px; /* מרווח אחיד */
-    min-width: 200px; /* רוחב מינימלי לפילטר */
+    margin: 10px;
+    min-width: 200px;
 }
 
 .filter-label {
@@ -79,7 +79,7 @@ header {
     border-radius: 15px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     margin-bottom: 30px;
-    width: 100%; /* רוחב מלא */
+    width: 100%;
 }
 
 /* טבלה */
@@ -124,12 +124,12 @@ tr:hover {
 /* רספונסיביות - שיפורים */
 @media (max-width: 768px) {
     .filters-section {
-        flex-direction: column; /* פילטרים אחד מתחת לשני */
+        flex-direction: column;
     }
 
     .filter {
-        margin: 10px 0; /* מרווח אנכי בין פילטרים */
-        min-width: auto; /* הסרת רוחב מינימלי */
+        margin: 10px 0;
+        min-width: auto;
     }
 
     .container {
@@ -148,7 +148,77 @@ tr:hover {
         padding: 14px;
     }
 
-    /* טבלה - התאמה לטלפון */
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+
+/* סגנונות נוספים */
+.logo-container { /* סגנון ללוגו (אם יש) */
+    display: flex;
+    justify-content: center; /* מרכוז אופקי */
+    align-items: center; /* מרכוז אנכי */
+}
+
+.logo { /* סגנון לתמונה של לוגו (אם יש) */
+    max-height: 80px; /* גובה מקסימלי ללוגו */
+    margin-right: 10px; /* מרווח בין הלוגו לכותרת */
+}
+
+.content-container { /* סגנון לקונטיינר של התוכן */
+    width: 95%; /* רוחב הקונטיינר */
+    max-width: 1200px; /* רוחב מקסימלי */
+    margin: 20px auto; /* מרכוז */
+    padding: 20px;
+}
+
+.map-section { /* סגנון לקטע של המפה */
+    margin-bottom: 20px;
+}
+
+.table-section { /* סגנון לקטע של הטבלה */
+    overflow-x: auto; /* הוספת גלילה אופקית לטבלה (במקרה הצורך) */
+}
+
+/* סגנון נוסף לפילטרים (אופציונלי) */
+.filter-select, .filter-input {
+    width: 100%; /* רוחב מלא של הפילטר */
+    box-sizing: border-box; /* כולל padding ו border בחישוב הרוחב */
+}
+
+/* סגנון לטבלה */
+table {
+    border-collapse: collapse; /* איחוד גבולות תאים */
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid #ddd; /* הוספת גבולות לתאים */
+    padding: 8px;
+    text-align: right; /* יישור טקסט לימין (עברית) */
+}
+
+th {
+    background-color: #f0f0f0; /* צבע רקע לכותרות */
+    font-weight: bold;
+}
+
+/* סגנון לשורות זוגיות */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* סגנון למפה */
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* סגנון רספונסיבי לטבלה */
+@media screen and (max-width: 600px) {
     table {
         display: block; /* הפיכת הטבלה לבלוק */
         overflow-x: auto; /* הוספת גלילה אופקית */
