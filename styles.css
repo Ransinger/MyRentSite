@@ -1,22 +1,22 @@
 /* עיצוב כללי */
 body {
-    font-family: 'Helvetica Neue', Arial, sans-serif; /* גופן מודרני */
+    font-family: 'Helvetica Neue', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* רקע נעים */
+    background-color: #f4f4f4;
     color: #333;
     display: flex;
     flex-direction: column;
-    align-items: center; /* מרכוז אנכי */
+    align-items: center;
 }
 
 .container {
     width: 90%;
-    max-width: 900px; /* רוחב מקסימלי גדול יותר */
+    max-width: 900px;
     background-color: white;
-    padding: 30px; /* יותר ריווח פנימי */
-    border-radius: 15px; /* עיגול פינות מודרני */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* צל עמוק יותר */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
     margin-top: 30px;
 }
 
@@ -27,10 +27,10 @@ header {
 }
 
 .header-title {
-    font-size: 2.8em; /* גודל כותרת גדול יותר */
-    color: #2c3e50; /* צבע כותרת מודרני */
+    font-size: 2.8em;
+    color: #2c3e50;
     margin: 0;
-    font-weight: 600; /* עובי גופן בינוני */
+    font-weight: 600;
 }
 
 /* תיבת חיפוש ופילטרים */
@@ -38,13 +38,15 @@ header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 40px;
+    flex-wrap: wrap; /* אפשרות לעבור לשורה חדשה */
 }
 
 .filter {
     flex: 1;
     display: flex;
     flex-direction: column;
-    margin: 0 10px; /* מרווח בין הפילטרים */
+    margin: 10px; /* מרווח אחיד */
+    min-width: 200px; /* רוחב מינימלי לפילטר */
 }
 
 .filter-label {
@@ -60,15 +62,15 @@ header {
     border-radius: 8px;
     border: 1px solid #ddd;
     background-color: #fff;
-    transition: border-color 0.3s ease; /* מעבר חלק */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* צל קל */
+    transition: border-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .filter-select:focus,
 .filter-input:focus {
     border-color: #4CAF50;
     outline: none;
-    box-shadow: 0 2px 5px rgba(76, 175, 80, 0.2); /* צל עם צבע בפוקוס */
+    box-shadow: 0 2px 5px rgba(76, 175, 80, 0.2);
 }
 
 /* עיצוב המפה */
@@ -77,30 +79,31 @@ header {
     border-radius: 15px;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     margin-bottom: 30px;
+    width: 100%; /* רוחב מלא */
 }
 
 /* טבלה */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 0; /* הסרת מרווח מיותר */
+    margin-top: 0;
     background-color: #fff;
-    border-radius: 15px; /* עיגול פינות מודרני */
-    overflow: hidden; /* מניעת גלישה של תוכן */
+    border-radius: 15px;
+    overflow: hidden;
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
 th, td {
-    padding: 18px; /* יותר ריווח */
+    padding: 18px;
     text-align: center;
-    border-bottom: 1px solid #eee; /* קו הפרדה עדין */
+    border-bottom: 1px solid #eee;
 }
 
 th {
     background-color: #4CAF50;
     color: white;
     font-size: 1.2em;
-    font-weight: 600; /* עובי גופן בינוני */
+    font-weight: 600;
 }
 
 td {
@@ -113,19 +116,20 @@ tr:nth-child(even) {
 }
 
 tr:hover {
-    background-color: #f0f0f0; /* שינוי צבע עדין יותר */
+    background-color: #f0f0f0;
     cursor: pointer;
-    transition: background-color 0.2s ease; /* מעבר חלק */
+    transition: background-color 0.2s ease;
 }
 
-/* רספונסיביות */
+/* רספונסיביות - שיפורים */
 @media (max-width: 768px) {
     .filters-section {
-        flex-direction: column;
+        flex-direction: column; /* פילטרים אחד מתחת לשני */
     }
 
     .filter {
-        margin: 0 0 20px 0; /* מרווח בין פילטרים אנכית */
+        margin: 10px 0; /* מרווח אנכי בין פילטרים */
+        min-width: auto; /* הסרת רוחב מינימלי */
     }
 
     .container {
@@ -142,5 +146,11 @@ tr:hover {
 
     th, td {
         padding: 14px;
+    }
+
+    /* טבלה - התאמה לטלפון */
+    table {
+        display: block; /* הפיכת הטבלה לבלוק */
+        overflow-x: auto; /* הוספת גלילה אופקית */
     }
 }
