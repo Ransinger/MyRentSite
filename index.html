@@ -11,36 +11,74 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <style>
         body {
-            direction: rtl; /* כיוון טקסט מימין לשמאל */
+            direction: rtl;
+            font-family: Arial, sans-serif;
         }
         table {
-            direction: rtl; /* כיוון טקסט מימין לשמאל בטבלה */
+            direction: rtl;
         }
         th, td {
-            text-align: right; /* יישור טקסט לימין */
+            text-align: right;
+        }
+        .language-selector {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .language-selector button {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .language-selector button:hover {
+            background: #ddd;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
 <body>
     <header>
         <div class="logo-container">
-            <h1 class="header-title" data-lang="title">ממוצע שכר דירה בתל אביב </h1>
+            <h1 class="header-title" data-lang="title">ממוצע שכר דירה בתל אביב</h1>
         </div>
         <div class="language-selector">
             <button data-lang="he">עברית</button>
             <button data-lang="en">English</button>
         </div>
     </header>
-
     <main class="content-container">
-        </main>
-
+        <div id="map"></div>
+    </main>
     <script>
-        // ... (קוד Leaflet)
-
-        // ... (פונקציות fetchRentData ו-loadTable)
-
-        // בחירת שפה
+        // יצירת המפה והגדרת המיקום ההתחלתי בתל אביב
+        var map = L.map('map').setView([32.0853, 34.7818], 13);
+        
+        // הוספת שכבת מפה מבוססת OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // הוספת גיאוקודר (חיפוש כתובות והצגתן על המפה)
+        var geocoder = L.Control.geocoder({
+            defaultMarkGeocode: false
+        }).on('markgeocode', function(e) {
+            var latlng = e.geocode.center;
+            map.setView(latlng, 16); // זום אוטומטי לרחוב שנמצא
+            L.marker(latlng).addTo(map); // הוספת מרקר על הרחוב
+        }).addTo(map);
+        
+        // שינוי שפה לפי בחירת המשתמש
         const langButtons = document.querySelectorAll('.language-selector button');
         langButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -49,36 +87,12 @@
             });
         });
 
-        // פונקציה לתרגום טקסט
+        // פונקציה להחלפת הטקסט באתר בהתאם לשפה שנבחרה
         function translateText(lang) {
             const elements = document.querySelectorAll('[data-lang]');
             const translations = {
-                he: {
-                    title: 'ממוצע שכר דירה בתל אביב ',
-                    roomsLabel: 'סנן לפי מספר חדרים',
-                    all: 'הכל',
-                    '1room': '1 חדר',
-                    '2rooms': '2 חדרים',
-                    '3rooms': '3 חדרים',
-                    '4rooms': '4+ חדרים',
-                    streetLabel: 'חפש רחוב בתל אביב',
-                    neighborhood: 'שכונה',
-                    rooms: 'מספר חדרים',
-                    price: 'ממוצע שכר דירה (₪)'
-                },
-                en: {
-                    title: 'Average rent in Tel Aviv ',
-                    roomsLabel: 'Filter by number of rooms',
-                    all: 'All',
-                    '1room': '1 room',
-                    '2rooms': '2 rooms',
-                    '3rooms': '3 rooms',
-                    '4rooms': '4+ rooms',
-                    streetLabel: 'Search for a street in Tel Aviv',
-                    neighborhood: 'Neighborhood',
-                    rooms: 'Number of rooms',
-                    price: 'Average rent (₪)'
-                }
+                he: { title: 'ממוצע שכר דירה בתל אביב' },
+                en: { title: 'Average rent in Tel Aviv' }
             };
             elements.forEach(element => {
                 const key = element.dataset.lang;
@@ -87,8 +101,6 @@
                 }
             });
         }
-
-        // ... (קריאות לפונקציות)
     </script>
 </body>
 </html>
